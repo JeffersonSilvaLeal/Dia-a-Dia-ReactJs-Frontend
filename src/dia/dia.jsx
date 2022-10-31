@@ -4,11 +4,20 @@ import DiaForm from './diaForm'
 import DiaList from './diaList'
 
 export default class Dia extends Component {
+    constructor(props) {
+        super(props)
+        this.handleAdd = this.handleAdd.bind(this)
+    }
+
+    handleAdd() {
+        console.log(this)
+    }
+
     render() {
         return (
             <div>
                 <PageHeader name='Tarefas' small='Cadastro'></PageHeader>
-                <DiaForm />
+                <DiaForm handleAdd={this.handleAdd} />
                 <DiaList />
             </div>
         )
