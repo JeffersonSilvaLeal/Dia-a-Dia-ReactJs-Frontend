@@ -1,7 +1,12 @@
 import React, { Component } from 'react'
+import axios from 'axios'
+
 import PageHeader from '../template/pageHeader'
 import DiaForm from './diaForm'
 import DiaList from './diaList'
+
+
+const URL = 'http://localhost:3003/api/dias'
 
 export default class Dia extends Component {
     constructor(props) {
@@ -10,14 +15,25 @@ export default class Dia extends Component {
 
         this.handleChange = this.handleChange.bind(this)
         this.handleAdd = this.handleAdd.bind(this)
+        this.handleRemove = this.handleRemove.bind(this)
+        this.refresh()
+    }
+
+    refresh() {
+        axios.get(`${URL}?sort=-createdAt`).then(resp => this.setState({...this.state, description: '', list: resp.data}))
     }
 
     handleChange(e) {
-        this.setState({...this.setState, description: e.target.value })
+        this.setState({...this.state, description: e.target.value })
     }
 
     handleAdd() {
-        console.log(this.state.description)
+        const description = this.state.description 
+        axios.post(URL, { description }).then(resp => this.refresh())
+    }
+
+    handleRemove(dia) {
+        axios.delete(`${URL}/${dia._id}`).then(resp => this.refresh())
     }
 
     render() {
@@ -27,7 +43,8 @@ export default class Dia extends Component {
                 <DiaForm description={this.state.description}
                     handleChange={this.handleChange}
                     handleAdd={this.handleAdd} />
-                <DiaList />
+                <DiaList list={this.state.list}
+                    handleRemove={this.handleRemove}/>
             </div>
         )
     }
