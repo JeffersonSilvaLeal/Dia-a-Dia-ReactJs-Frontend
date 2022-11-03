@@ -5,12 +5,20 @@ export default props => {
 
     const renderRows = () => {
 
-        const list = props.list  || []
+        const list = props.list || []
         return list.map(dia => (
             <tr key={dia._id}>
-                <td>{dia.description}</td>
+                <td className={dia.done ? 'markedAsDone' : ''}>{dia.description}</td>
                 <td>
-                    <IconButton style='danger' icon='trash-o'
+                    <IconButton style='success' icon='check' hide={dia.done}
+                        onClick={() => props.handleMarkAsDone(dia)}>
+                    </IconButton>
+
+                    <IconButton style='warning' icon='undo' hide={!dia.done}
+                        onClick={() => props.handleMarkAsPending(dia)}>
+                    </IconButton>
+
+                    <IconButton style='danger' icon='trash-o' hide={!dia.done}
                         onClick={() => props.handleRemove(dia)}>
                     </IconButton>
                 </td>

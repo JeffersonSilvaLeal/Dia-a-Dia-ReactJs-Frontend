@@ -16,6 +16,8 @@ export default class Dia extends Component {
         this.handleChange = this.handleChange.bind(this)
         this.handleAdd = this.handleAdd.bind(this)
         this.handleRemove = this.handleRemove.bind(this)
+        this.handleMarkAsDone = this.handleMarkAsDone.bind(this)
+        this.handleMarkAsPending = this.handleMarkAsPending.bind(this)
         this.refresh()
     }
 
@@ -36,14 +38,25 @@ export default class Dia extends Component {
         axios.delete(`${URL}/${dia._id}`).then(resp => this.refresh())
     }
 
+    handleMarkAsDone(dia) {
+        axios.put(`${URL}/${dia._id}`, {...dia, done: true}).then(resp => this.refresh())
+    }
+
+    handleMarkAsPending(dia) {
+        axios.put(`${URL}/${dia._id}`,{...dia, done: false }).then(resp => this.refresh())
+    }
     render() {
         return (
             <div>
                 <PageHeader name='Tarefas' small='Cadastro'></PageHeader>
-                <DiaForm description={this.state.description}
+                <DiaForm 
+                    description={this.state.description}
                     handleChange={this.handleChange}
                     handleAdd={this.handleAdd} />
-                <DiaList list={this.state.list}
+                <DiaList 
+                    list={this.state.list}
+                    handleMarkAsDone={this.handleMarkAsDone}
+                    handleMarkAsPending={this.handleMarkAsPending}
                     handleRemove={this.handleRemove}/>
             </div>
         )
