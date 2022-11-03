@@ -18,11 +18,18 @@ export default class Dia extends Component {
         this.handleRemove = this.handleRemove.bind(this)
         this.handleMarkAsDone = this.handleMarkAsDone.bind(this)
         this.handleMarkAsPending = this.handleMarkAsPending.bind(this)
+        this.handleSearch = this.handleSearch.bind(this)
         this.refresh()
     }
 
-    refresh() {
-        axios.get(`${URL}?sort=-createdAt`).then(resp => this.setState({...this.state, description: '', list: resp.data}))
+    refresh(description = '') {
+        const search = description ? `&description__regex=/${description}/` : '' 
+        axios.get(`${URL}?sort=-createdAt${search}`).then(resp => this.setState({...this.state, description, list: resp.data}))
+    }
+
+
+    handleSearch() {
+        this.refresh(this.state.description)
     }
 
     handleChange(e) {
@@ -35,15 +42,15 @@ export default class Dia extends Component {
     }
 
     handleRemove(dia) {
-        axios.delete(`${URL}/${dia._id}`).then(resp => this.refresh())
+        axios.delete(`${URL}/${dia._id}`).then(resp => this.refresh(this.state.description))
     }
 
     handleMarkAsDone(dia) {
-        axios.put(`${URL}/${dia._id}`, {...dia, done: true}).then(resp => this.refresh())
+        axios.put(`${URL}/${dia._id}`, {...dia, done: true}).then(resp => this.refresh(this.state.description))
     }
 
     handleMarkAsPending(dia) {
-        axios.put(`${URL}/${dia._id}`,{...dia, done: false }).then(resp => this.refresh())
+        axios.put(`${URL}/${dia._id}`,{...dia, done: false }).then(resp => this.refresh(this.state.description))
     }
     render() {
         return (
@@ -52,7 +59,8 @@ export default class Dia extends Component {
                 <DiaForm 
                     description={this.state.description}
                     handleChange={this.handleChange}
-                    handleAdd={this.handleAdd} />
+                    handleAdd={this.handleAdd} 
+                    handleSearch={this.handleSearch}/>
                 <DiaList 
                     list={this.state.list}
                     handleMarkAsDone={this.handleMarkAsDone}
